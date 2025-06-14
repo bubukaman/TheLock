@@ -4,78 +4,148 @@
   <meta charset="UTF-8" />
   <title>Замок с кодом</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
       background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       font-family: sans-serif;
     }
-    .lock {
+    .container {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      flex-direction: column;
+      height: 100%;
+    }
+    .lock {
+      flex: 1;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
     }
     .digit {
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 30%;
+    }
+    .digit button {
+      flex: 1;
+      width: 100%;
+      font-size: 5vw;
     }
     .number {
-      font-size: 2em;
-      margin: 5px;
+      font-size: 10vw;
+      margin: 10px 0;
     }
-    button {
-      font-size: 1.2em;
-      padding: 5px 10px;
+    .controls {
+      display: flex;
+      flex: 0.3;
+      flex-direction: column;
+    }
+    .controls button {
+      flex: 1;
+      font-size: 5vw;
+      width: 100%;
     }
     #message {
-      font-size: 1.5em;
+      text-align: center;
+      font-size: 6vw;
       color: green;
-      margin-top: 20px;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="lock">
-    <div class="digit">
-      <button onclick="changeDigit(0, 1)">+</button>
-      <div class="number" id="num0">0</div>
-      <button onclick="changeDigit(0, -1)">-</button>
+  <div class="container">
+    <div class="lock">
+      <div class="digit">
+        <button 
+          onmousedown="startChange(0, 1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(0,1)"
+          ontouchend="stopChange()"
+        >+</button>
+        <div class="number" id="num0">0</div>
+        <button 
+          onmousedown="startChange(0, -1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(0,-1)"
+          ontouchend="stopChange()"
+        >-</button>
+      </div>
+      <div class="digit">
+        <button 
+          onmousedown="startChange(1, 1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(1,1)"
+          ontouchend="stopChange()"
+        >+</button>
+        <div class="number" id="num1">0</div>
+        <button 
+          onmousedown="startChange(1, -1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(1,-1)"
+          ontouchend="stopChange()"
+        >-</button>
+      </div>
+      <div class="digit">
+        <button 
+          onmousedown="startChange(2, 1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(2,1)"
+          ontouchend="stopChange()"
+        >+</button>
+        <div class="number" id="num2">0</div>
+        <button 
+          onmousedown="startChange(2, -1)" 
+          onmouseup="stopChange()" 
+          onmouseleave="stopChange()"
+          ontouchstart="startChange(2,-1)"
+          ontouchend="stopChange()"
+        >-</button>
+      </div>
     </div>
-    <div class="digit">
-      <button onclick="changeDigit(1, 1)">+</button>
-      <div class="number" id="num1">0</div>
-      <button onclick="changeDigit(1, -1)">-</button>
-    </div>
-    <div class="digit">
-      <button onclick="changeDigit(2, 1)">+</button>
-      <div class="number" id="num2">0</div>
-      <button onclick="changeDigit(2, -1)">-</button>
+
+    <div id="message"></div>
+
+    <div class="controls">
+      <button onclick="checkCode()">Проверить</button>
+      <button onclick="resetLock()">Сброс</button>
     </div>
   </div>
-
-  <button id="checkBtn" onclick="checkCode()">Проверить</button>
-  <button onclick="resetLock()">Сброс</button>
-
-  <div id="message"></div>
 
   <script>
     const correctCode = [8, 1, 7];
     const currentCode = [0, 0, 0];
+    let intervalId = null;
 
-    function changeDigit(index, delta) {
-      currentCode[index] = (currentCode[index] + delta + 10) % 10;
+    function updateDisplay(index) {
       document.getElementById('num' + index).innerText = currentCode[index];
     }
 
-    function checkCode() {
-      const btn = document.getElementById('checkBtn');
-      btn.disabled = true;
+    function startChange(index, delta) {
+      changeDigit(index, delta); // сразу меняем при нажатии
+      intervalId = setInterval(() => {
+        changeDigit(index, delta);
+      }, 100); // каждые 100 мс меняем
+    }
 
+    function stopChange() {
+      clearInterval(intervalId);
+    }
+
+    function changeDigit(index, delta) {
+      currentCode[index] = (currentCode[index] + delta + 10) % 10;
+      updateDisplay(index);
+    }
+
+    function checkCode() {
       if (
         currentCode[0] === correctCode[0] &&
         currentCode[1] === correctCode[1] &&
@@ -86,18 +156,14 @@
         document.getElementById('message').innerText = 'Неправильно!';
         setTimeout(() => {
           document.getElementById('message').innerText = '';
-          btn.disabled = false;
-        }, 100);
-        return;
+        }, 500);
       }
-
-      btn.disabled = false;
     }
 
     function resetLock() {
       for (let i = 0; i < currentCode.length; i++) {
         currentCode[i] = 0;
-        document.getElementById('num' + i).innerText = '0';
+        updateDisplay(i);
       }
       document.getElementById('message').innerText = '';
     }
