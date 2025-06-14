@@ -11,7 +11,7 @@
       height: 100%;
       background: #fff;
       font-family: sans-serif;
-      touch-action: manipulation; /* запрет двойного тапа для зума */
+      touch-action: manipulation; /* убираем двойной тап зум */
     }
     .container {
       display: flex;
@@ -62,19 +62,19 @@
   <div class="container">
     <div class="lock">
       <div class="digit">
-        <button id="up0">+</button>
+        <button onclick="changeDigit(0, 1)">+</button>
         <div class="number" id="num0">0</div>
-        <button id="down0">-</button>
+        <button onclick="changeDigit(0, -1)">-</button>
       </div>
       <div class="digit">
-        <button id="up1">+</button>
+        <button onclick="changeDigit(1, 1)">+</button>
         <div class="number" id="num1">0</div>
-        <button id="down1">-</button>
+        <button onclick="changeDigit(1, -1)">-</button>
       </div>
       <div class="digit">
-        <button id="up2">+</button>
+        <button onclick="changeDigit(2, 1)">+</button>
         <div class="number" id="num2">0</div>
-        <button id="down2">-</button>
+        <button onclick="changeDigit(2, -1)">-</button>
       </div>
     </div>
 
@@ -89,51 +89,15 @@
   <script>
     const correctCode = [8, 1, 7];
     const currentCode = [0, 0, 0];
-    let intervalId = null;
 
     function updateDisplay(index) {
       document.getElementById('num' + index).innerText = currentCode[index];
-    }
-
-    function startChange(index, delta) {
-      changeDigit(index, delta);
-      intervalId = setInterval(() => {
-        changeDigit(index, delta);
-      }, 100);
-    }
-
-    function stopChange() {
-      clearInterval(intervalId);
     }
 
     function changeDigit(index, delta) {
       currentCode[index] = (currentCode[index] + delta + 10) % 10;
       updateDisplay(index);
     }
-
-    function addPressEvents(id, index, delta) {
-      const el = document.getElementById(id);
-
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        startChange(index, delta);
-      });
-      el.addEventListener('mouseup', stopChange);
-      el.addEventListener('mouseleave', stopChange);
-
-      el.addEventListener('touchstart', e => {
-        e.preventDefault();
-        startChange(index, delta);
-      }, { passive: false });
-      el.addEventListener('touchend', stopChange);
-    }
-
-    addPressEvents('up0', 0, 1);
-    addPressEvents('down0', 0, -1);
-    addPressEvents('up1', 1, 1);
-    addPressEvents('down1', 1, -1);
-    addPressEvents('up2', 2, 1);
-    addPressEvents('down2', 2, -1);
 
     function checkCode() {
       if (
