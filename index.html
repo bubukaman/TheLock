@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Замок с кодом</title>
+  <style>
+    body {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+    }
+    .lock {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .digit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .number {
+      font-size: 2em;
+      margin: 5px;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 5px 10px;
+    }
+    #message {
+      font-size: 1.5em;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lock">
+    <div class="digit">
+      <button onclick="changeDigit(0, 1)">+</button>
+      <div class="number" id="num0">0</div>
+      <button onclick="changeDigit(0, -1)">-</button>
+    </div>
+    <div class="digit">
+      <button onclick="changeDigit(1, 1)">+</button>
+      <div class="number" id="num1">0</div>
+      <button onclick="changeDigit(1, -1)">-</button>
+    </div>
+    <div class="digit">
+      <button onclick="changeDigit(2, 1)">+</button>
+      <div class="number" id="num2">0</div>
+      <button onclick="changeDigit(2, -1)">-</button>
+    </div>
+    <div class="digit">
+      <button onclick="changeDigit(3, 1)">+</button>
+      <div class="number" id="num3">0</div>
+      <button onclick="changeDigit(3, -1)">-</button>
+    </div>
+  </div>
+
+  <button onclick="resetLock()">Сброс</button>
+
+  <div id="message"></div>
+
+  <script>
+    const correctCode = [8, 1, 7];
+    const currentCode = [0, 0, 0, 0];
+
+    function changeDigit(index, delta) {
+      currentCode[index] = (currentCode[index] + delta + 10) % 10;
+      document.getElementById('num' + index).innerText = currentCode[index];
+      checkCode();
+    }
+
+    function checkCode() {
+      if (
+        currentCode[0] === correctCode[0] &&
+        currentCode[1] === correctCode[1] &&
+        currentCode[2] === correctCode[2]
+      ) {
+        document.getElementById('message').innerText = 'Правильный код! 🎉';
+      } else {
+        document.getElementById('message').innerText = '';
+      }
+    }
+
+    function resetLock() {
+      for (let i = 0; i < currentCode.length; i++) {
+        currentCode[i] = 0;
+        document.getElementById('num' + i).innerText = '0';
+      }
+      document.getElementById('message').innerText = '';
+    }
+  </script>
+
+</body>
+</html>
