@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Замок с кодом</title>
   <style>
     html, body {
@@ -10,6 +11,7 @@
       height: 100%;
       background: #fff;
       font-family: sans-serif;
+      touch-action: manipulation; /* запрет двойного тапа для зума */
     }
     .container {
       display: flex;
@@ -60,55 +62,19 @@
   <div class="container">
     <div class="lock">
       <div class="digit">
-        <button 
-          onmousedown="startChange(0, 1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(0,1)"
-          ontouchend="stopChange()"
-        >+</button>
+        <button id="up0">+</button>
         <div class="number" id="num0">0</div>
-        <button 
-          onmousedown="startChange(0, -1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(0,-1)"
-          ontouchend="stopChange()"
-        >-</button>
+        <button id="down0">-</button>
       </div>
       <div class="digit">
-        <button 
-          onmousedown="startChange(1, 1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(1,1)"
-          ontouchend="stopChange()"
-        >+</button>
+        <button id="up1">+</button>
         <div class="number" id="num1">0</div>
-        <button 
-          onmousedown="startChange(1, -1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(1,-1)"
-          ontouchend="stopChange()"
-        >-</button>
+        <button id="down1">-</button>
       </div>
       <div class="digit">
-        <button 
-          onmousedown="startChange(2, 1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(2,1)"
-          ontouchend="stopChange()"
-        >+</button>
+        <button id="up2">+</button>
         <div class="number" id="num2">0</div>
-        <button 
-          onmousedown="startChange(2, -1)" 
-          onmouseup="stopChange()" 
-          onmouseleave="stopChange()"
-          ontouchstart="startChange(2,-1)"
-          ontouchend="stopChange()"
-        >-</button>
+        <button id="down2">-</button>
       </div>
     </div>
 
@@ -130,10 +96,10 @@
     }
 
     function startChange(index, delta) {
-      changeDigit(index, delta); // сразу меняем при нажатии
+      changeDigit(index, delta);
       intervalId = setInterval(() => {
         changeDigit(index, delta);
-      }, 100); // каждые 100 мс меняем
+      }, 100);
     }
 
     function stopChange() {
@@ -144,6 +110,30 @@
       currentCode[index] = (currentCode[index] + delta + 10) % 10;
       updateDisplay(index);
     }
+
+    function addPressEvents(id, index, delta) {
+      const el = document.getElementById(id);
+
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        startChange(index, delta);
+      });
+      el.addEventListener('mouseup', stopChange);
+      el.addEventListener('mouseleave', stopChange);
+
+      el.addEventListener('touchstart', e => {
+        e.preventDefault();
+        startChange(index, delta);
+      }, { passive: false });
+      el.addEventListener('touchend', stopChange);
+    }
+
+    addPressEvents('up0', 0, 1);
+    addPressEvents('down0', 0, -1);
+    addPressEvents('up1', 1, 1);
+    addPressEvents('down1', 1, -1);
+    addPressEvents('up2', 2, 1);
+    addPressEvents('down2', 2, -1);
 
     function checkCode() {
       if (
