@@ -56,28 +56,26 @@
       <div class="number" id="num2">0</div>
       <button onclick="changeDigit(2, -1)">-</button>
     </div>
-    <div class="digit">
-      <button onclick="changeDigit(3, 1)">+</button>
-      <div class="number" id="num3">0</div>
-      <button onclick="changeDigit(3, -1)">-</button>
-    </div>
   </div>
 
+  <button id="checkBtn" onclick="checkCode()">Проверить</button>
   <button onclick="resetLock()">Сброс</button>
 
   <div id="message"></div>
 
   <script>
     const correctCode = [8, 1, 7];
-    const currentCode = [0, 0, 0, 0];
+    const currentCode = [0, 0, 0];
 
     function changeDigit(index, delta) {
       currentCode[index] = (currentCode[index] + delta + 10) % 10;
       document.getElementById('num' + index).innerText = currentCode[index];
-      checkCode();
     }
 
     function checkCode() {
+      const btn = document.getElementById('checkBtn');
+      btn.disabled = true;
+
       if (
         currentCode[0] === correctCode[0] &&
         currentCode[1] === correctCode[1] &&
@@ -85,8 +83,15 @@
       ) {
         document.getElementById('message').innerText = 'Правильный код! 🎉';
       } else {
-        document.getElementById('message').innerText = '';
+        document.getElementById('message').innerText = 'Неправильно!';
+        setTimeout(() => {
+          document.getElementById('message').innerText = '';
+          btn.disabled = false;
+        }, 100);
+        return;
       }
+
+      btn.disabled = false;
     }
 
     function resetLock() {
